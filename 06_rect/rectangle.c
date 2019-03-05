@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 //I've provided "min" and "max" functions in
 //case they are useful to you
 int min (int a, int b) {
@@ -16,17 +17,94 @@ int max (int a, int b) {
 }
 
 //Declare your rectangle structure here!
+struct rect_t {
+  int x;
+  int y;
+  int width;
+  int height;
+};
+
+typedef struct rect_t rectangle;
 
 
 rectangle canonicalize(rectangle r) {
   //WRITE THIS FUNCTION
-  return r;
+  rectangle r_temp;
+  if (r.width < 0 && r.height < 0){
+     r_temp.width = abs(r.width);
+     r_temp.x = r.x - r_temp.width;
+     r_temp.height = abs(r.height);
+     r_temp.y = r.y - r_temp.height;
+     return r_temp;
+  }
+  else if (r.height < 0 && r.width >= 0){
+     r_temp.height = abs(r.height);
+     r_temp.y = r.y - r_temp.height;
+     r_temp.x = r.x;
+     r_temp.width = r.width;
+     return r_temp;
+  }
+  else if (r.width < 0 && r.height >= 0){
+     r_temp.width = abs(r.width);
+     r_temp.x = r.x - r_temp.width;
+     r_temp.height = r.height;
+     r_temp.y = r.y;
+     return r_temp;
+  }
+  else {
+    r_temp.width = r.width;
+    r_temp.x = r.x;
+    r_temp.height = r.height;
+    r_temp.y = r.y;
+    return r_temp;
+  }
 }
 rectangle intersection(rectangle r1, rectangle r2) {
   //WRITE THIS FUNCTION
-  return r1;
+  r1 = canonicalize(r1);
+  r2 = canonicalize(r2);
+  int min_right = min(r1.x + r1.width, r2.x + r2.width);
+  int max_left = max(r1.x, r2.x);
+  int min_top = min(r1.y + r1.height, r2.y + r2.height);
+  int max_bottom = max(r1.y, r2.y);
+  rectangle ans;
+  
+  // check whether both are same rectangle
+  if(r1.x == r2.x && r1.y == r2.y && r1.width == r2.width && r1.height == r2.height){
+    ans.x = r1.x;
+    ans.y = r1.y;
+    ans.width = r1.width;
+    ans.height = r1.height; 
+    ans = canonicalize(ans);
+    return ans;
+  }
+  // Non-overlapping cases
+  else if ( ((min_right - max_left) < 0) || ((min_top - max_bottom) < 0) ){
+    ans.x = r1.x;
+    ans.y = r1.y;
+    ans.width = 0;
+    ans.height = 0;
+    return ans;
+  }
+  // One side overlap only 
+  else if ( ((min_right - max_left) == 0) || ((min_top - max_bottom) == 0)  ){
+    ans.x = max(r1.x, r2.x);
+    ans.y = max(r1.y, r2.y);
+    ans.width = ( min( (r1.x + r1.width), (r2.x + r2.width) ) - ans.x);
+    ans.height = ( min( (r1.y + r1.height), (r2.y + r2.height) ) - ans.y);
+    ans = canonicalize(ans);
+    return ans;   
+  }
+  // Overlapping rectangles
+  else {//if ( ((min_right - max_left) > 0) && ((min_top - max_bottom) > 0) ) {
+    ans.x = max(r1.x, r2.x);
+    ans.y = max(r1.y, r2.y);
+    ans.width = (min(r1.width + r1.x, r2.width + r2.x) - ans.x);
+    ans.height = (min(r1.height + r1.y, r2.height + r2.y) - ans.y);
+    ans = canonicalize(ans);
+    return ans;
+    }
 }
-
 //You should not need to modify any code below this line
 void printRectangle(rectangle r) {
   r = canonicalize(r);
