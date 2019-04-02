@@ -2,8 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-void reverse(char * str) {
+void reverse(char * str)
+{
   //WRITE ME!
+  int length = strlen(str);
+  char answer[(length + 1)];
+  answer[length] = '\0';
+  int i = 0;
+  int j = length;   
+  if (length == 0)
+    {
+      strcpy(str, answer);
+    }
+  else if (length > 0)
+    {
+      while ( i < length && j !=0  )
+	{
+	  answer[i] = str[j-1];
+	  i++;
+	  j--;
+	}
+      strcpy(str, answer);
+    }
+  else
+    {
+      exit(EXIT_FAILURE);
+    }
 }
 
 int main(void) {
